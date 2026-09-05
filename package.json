@@ -4,12 +4,12 @@
   "description": "SmartApply - Production-grade College Admission Platform with Real-Time Tracking & AI Decision Support",
   "main": "server/server.js",
   "scripts": {
+    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+    "start": "node server/server.js",
+    "install:all": "npm install --prefix server && npm install --prefix client",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "seed": "cd server && node seeds/seed.js",
-    "build": "cd client && npm run build",
-    "start": "cd server && npm start"
+    "seed": "cd server && node seeds/seed.js"
   },
   "keywords": ["smartapply", "mern", "admissions", "realtime", "socket.io", "react"],
   "author": "SmartApply Team",
