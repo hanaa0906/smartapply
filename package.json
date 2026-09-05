@@ -1,0 +1,17 @@
+{
+  "name": "smartapply-monorepo",
+  "version": "1.0.0",
+  "description": "SmartApply - Production-grade College Admission Platform with Real-Time Tracking & AI Decision Support",
+  "main": "server/server.js",
+  "scripts": {
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "cd server && node seeds/seed.js",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start"
+  },
+  "keywords": ["smartapply", "mern", "admissions", "realtime", "socket.io", "react"],
+  "author": "SmartApply Team",
+  "license": "MIT"
+}
