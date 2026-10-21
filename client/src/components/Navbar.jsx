@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { useNotifications } from '../context/NotificationContext';
+import LanguageSwitcher from './LanguageSwitcher';
 import { 
   Sparkles, 
   Bell, 
@@ -61,7 +62,7 @@ export default function Navbar() {
               <div className="flex flex-col">
                 <span className="font-extrabold text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
                   SmartApply
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-indigo-50 text-indigo-700 rounded border border-indigo-200">
+                  <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 bg-indigo-50 text-indigo-700 rounded border border-indigo-200">
                     Pro
                   </span>
                 </span>
@@ -85,6 +86,9 @@ export default function Navbar() {
                 <Link to="/courses" className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${isLinkActive('/courses') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>
                   Courses & Colleges
                 </Link>
+                <Link to="/universities" className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${isLinkActive('/universities') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>
+                  Global Universities
+                </Link>
                 <Link to="/about" className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${isLinkActive('/about') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>
                   About & Ethics
                 </Link>
@@ -99,6 +103,9 @@ export default function Navbar() {
                 </Link>
                 <Link to="/student/apply" className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${isLinkActive('/student/apply') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>
                   Apply
+                </Link>
+                <Link to="/student/universities" className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${isLinkActive('/student/universities') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>
+                  Global Universities
                 </Link>
                 <Link to="/student/recommendations" className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${isLinkActive('/student/recommendations') ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}>
                   AI Match
@@ -141,7 +148,9 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Menu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
+            <LanguageSwitcher />
+
             {/* Quick Demo Switcher Pill */}
             <div className="hidden sm:flex items-center bg-indigo-50/80 border border-indigo-100 p-1 rounded-xl">
               <button
@@ -309,12 +318,14 @@ export default function Navbar() {
               <>
                 <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Home</Link>
                 <Link to="/courses" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Courses</Link>
+                <Link to="/universities" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Global Universities</Link>
                 <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">About & Ethics</Link>
               </>
             ) : user.role === 'student' ? (
               <>
                 <Link to="/student/dashboard" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Dashboard</Link>
                 <Link to="/student/apply" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Apply Online</Link>
+                <Link to="/student/universities" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Global Universities</Link>
                 <Link to="/student/recommendations" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">AI Compatibility</Link>
                 <Link to="/student/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">What-If Simulator</Link>
                 <Link to="/student/scholarships" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 rounded-lg">Scholarships</Link>

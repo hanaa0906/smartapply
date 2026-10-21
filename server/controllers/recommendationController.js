@@ -9,7 +9,7 @@ exports.getRecommendations = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Student profile not found. Please complete your profile.' });
     }
 
-    const courses = await Course.find({ isActive: true }).populate('collegeId', 'name code city state accreditation logo');
+    const courses = await Course.find({ isActive: true, isExternal: { $ne: true } }).populate('collegeId', 'name code city state accreditation logo');
 
     const evaluated = courses.map(course => {
       const evaluation = calculateCourseCompatibility(studentProfile, course);

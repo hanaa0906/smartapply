@@ -33,3 +33,21 @@
 .pulse-glow {
   animation: pulseGlow 2s infinite ease-in-out;
 }
+
+/* Language switcher: hide the translation toolbar and keep the layout in place */
+.goog-te-banner-frame,
+.goog-te-gadget-icon,
+iframe.skiptranslate,
+body > .skiptranslate,
+#goog-gt-tt,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+body {
+  top: 0 !important;
+  position: static !important;
+}
+.goog-text-highlight {
+  background: transparent !important;
+  box-shadow: none !important;
+}

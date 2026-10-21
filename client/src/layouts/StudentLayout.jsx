@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ToastContainer from '../components/ToastContainer';
+import CounsellorChat from '../components/CounsellorChat';
 import { 
   LayoutDashboard, 
   Send, 
@@ -11,7 +12,8 @@ import {
   Sliders, 
   Award, 
   FolderLock, 
-  UserCircle 
+  UserCircle,
+  Globe2
 } from 'lucide-react';
 
 export default function StudentLayout() {
@@ -33,6 +35,7 @@ export default function StudentLayout() {
   const navItems = [
     { name: 'Dashboard', path: '/student/dashboard', icon: LayoutDashboard },
     { name: 'Apply for Course', path: '/student/apply', icon: Send },
+    { name: 'Global Universities', path: '/student/universities', icon: Globe2 },
     { name: 'AI Recommendations', path: '/student/recommendations', icon: Sparkles },
     { name: 'What-If Simulator', path: '/student/simulator', icon: Sliders },
     { name: 'Scholarships', path: '/student/scholarships', icon: Award },
@@ -75,6 +78,7 @@ export default function StudentLayout() {
       </main>
       <Footer />
       <ToastContainer />
+      <CounsellorChat />
     </div>
   );
 }

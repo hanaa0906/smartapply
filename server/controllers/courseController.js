@@ -4,7 +4,7 @@ const College = require('../models/College');
 exports.getCourses = async (req, res, next) => {
   try {
     const { department, degreeLevel, search, collegeId } = req.query;
-    const query = { isActive: true };
+    const query = { isActive: true, isExternal: { $ne: true } };
 
     if (department) query.department = department;
     if (degreeLevel) query.degreeLevel = degreeLevel;

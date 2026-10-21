@@ -9,3 +9,6 @@ dist/
 build/
 .DS_Store
 *.log
+
+# Saved copy of the global university directory
+server/data/universities-cache.json

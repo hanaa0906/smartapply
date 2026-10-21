@@ -161,7 +161,7 @@ exports.getMyApplications = async (req, res, next) => {
   try {
     const applications = await Application.find({ studentId: req.user.id })
       .populate('courseId', 'name code department degreeLevel durationYears feesPerYear')
-      .populate('collegeId', 'name code city state logo accreditation')
+      .populate('collegeId', 'name code city state country region isExternal logo accreditation')
       .sort({ createdAt: -1 });
 
     res.status(200).json({

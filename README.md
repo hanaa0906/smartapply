@@ -36,6 +36,23 @@ SmartApply is a production-grade, startup-ready web application built on the **M
    - Connects directly to `MONGODB_URI` if present.
    - If no local or remote MongoDB daemon is active, it automatically launches an embedded in-memory MongoDB instance (`mongodb-memory-server`) and pre-populates rich seed data, allowing immediate out-of-the-box demonstration!
 
+7. **Global University Directory (Live, Region-Based)**
+   - `/universities` (public) and `/student/universities` list 10,000+ universities in 200 countries, synced from the open world-universities dataset every 12 hours.
+   - Filter by region (Africa, Asia, Europe, Middle East, North America, South America, Oceania), country, or search text.
+   - If the live source is unreachable, the server uses its last saved copy, then a small built-in list.
+
+8. **One-Stop Application**
+   - Shortlist up to 10 universities and apply to all of them in one step with the saved profile and documents (`POST /api/universities/apply`).
+   - Every application appears in "All My Applications" on the student dashboard and in the admin queue, with the same real-time tracking.
+
+9. **Multilingual Interface**
+   - Language switcher in the navbar with 130+ languages (automatic translation, needs an internet connection) and right-to-left layout for Arabic, Urdu, Persian, Hebrew and others.
+
+10. **Counsellor Chatbot**
+   - "Ask Counsellor" button on every student page. Answers from the student's own data: application status, course matches, scholarships, missing documents, deadlines, interviews, and universities by country or region.
+   - Conversations are stored in MongoDB (`ChatMessage`) and served by Express (`/api/chat`).
+   - Works with no setup. Optionally set `ANTHROPIC_API_KEY` in `.env` to have replies written by an AI model, in the student's own language.
+
 ---
 
 ## 🔑 Demo Accounts & Quick Access

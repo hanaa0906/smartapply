@@ -22,6 +22,9 @@ const simulatorRoutes = require('./routes/simulatorRoutes');
 const scholarshipRoutes = require('./routes/scholarshipRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const universityRoutes = require('./routes/universityRoutes');
+const chatRoutes = require('./routes/chatRoutes');
+const { startAutoRefresh: startUniversitySync } = require('./services/universityDirectory');
 
 const app = express();
 const server = http.createServer(app);
@@ -61,6 +64,8 @@ app.use('/api/simulator', simulatorRoutes);
 app.use('/api/scholarships', scholarshipRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/universities', universityRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Static frontend serving if built
 const clientDist = path.join(__dirname, '../client/dist');
@@ -82,6 +87,7 @@ const PORT = process.env.PORT || 5001;
 const startServer = async () => {
   await connectDB();
   await seedInitialDataIfEmpty();
+  startUniversitySync();
   server.listen(PORT, () => {
     console.log(`====================================================`);
     console.log(`🚀 SmartApply Full-Stack Application is live!`);

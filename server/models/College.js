@@ -59,6 +59,20 @@ const collegeSchema = new mongoose.Schema({
     type: Number,
     default: 1998
   },
+  country: {
+    type: String,
+    default: 'India'
+  },
+  region: {
+    type: String,
+    default: 'Asia'
+  },
+  // true for universities added from the global directory via one-stop applications
+  isExternal: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
   isActive: {
     type: Boolean,
     default: true

@@ -12,6 +12,7 @@ import AboutPage from './pages/public/AboutPage';
 import CoursesPage from './pages/public/CoursesPage';
 import LoginPage from './pages/public/LoginPage';
 import RegisterPage from './pages/public/RegisterPage';
+import GlobalUniversities from './pages/public/GlobalUniversities';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/courses" element={<CoursesPage />} />
+        <Route path="/universities" element={<GlobalUniversities />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
@@ -52,6 +54,7 @@ export default function App() {
         <Route path="dashboard" element={<StudentDashboard />} />
         <Route path="profile" element={<StudentProfile />} />
         <Route path="courses" element={<CoursesPage />} />
+        <Route path="universities" element={<GlobalUniversities />} />
         <Route path="recommendations" element={<CourseRecommendations />} />
         <Route path="apply" element={<ApplicationWizard />} />
         <Route path="application/:id" element={<ApplicationDetails />} />

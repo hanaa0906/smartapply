@@ -81,6 +81,12 @@ const courseSchema = new mongoose.Schema({
     type: Date,
     default: () => new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
   },
+  // true for programs created by a one-stop application to a global directory university
+  isExternal: {
+    type: Boolean,
+    default: false,
+    index: true
+  },
   isActive: {
     type: Boolean,
     default: true

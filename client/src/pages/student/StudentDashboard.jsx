@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import api from '../../services/api';
 import StatusBadge from '../../components/StatusBadge';
+import MyApplicationsList from '../../components/MyApplicationsList';
 import { 
   GraduationCap, 
   Send, 
@@ -156,6 +157,8 @@ export default function StudentDashboard() {
           <span className="text-[11px] text-slate-400 mt-1 block">Zero page refresh required</span>
         </div>
       </div>
+
+      <MyApplicationsList applications={applications} />
 
       {/* Primary Application Real-Time Tracker Card */}
       {activeApp ? (
