@@ -12,3 +12,6 @@ build/
 
 # Saved copy of the global university directory
 server/data/universities-cache.json
+
+# Built-in database files (real user data)
+server/data/db/

@@ -281,20 +281,6 @@ export default function ApplicationWizard() {
             </div>
           </div>
 
-          {/* Test mismatch trigger helper button for user testing */}
-          <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-3 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-            <span className="text-indigo-900 text-[11px]">
-              💡 <em>Demo Tester Tip:</em> Want to see the Smart Assistant in action? Try changing 12th percentage to <strong>91%</strong> while your uploaded marksheet states 89.4%.
-            </span>
-            <button
-              type="button"
-              onClick={() => setAcademicSnapshot({ ...academicSnapshot, twelfthPercentage: 91 })}
-              className="text-[11px] font-bold px-3 py-1 bg-white border border-indigo-200 rounded-lg text-indigo-700 hover:bg-indigo-100 shrink-0"
-            >
-              Simulate 91% Mismatch
-            </button>
-          </div>
-
           <div className="flex justify-between pt-4 border-t border-slate-100">
             <button
               onClick={() => setStep(1)}

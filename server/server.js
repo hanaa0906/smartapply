@@ -4,11 +4,14 @@ const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
 const morgan = require('morgan');
-require('dotenv').config();
+// Load .env from the project root or the server folder, whichever exists
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const { connectDB } = require('./config/db');
+const { connectDB, closeDB } = require('./config/db');
 const { initSocket } = require('./config/socket');
 const { seedInitialDataIfEmpty } = require('./seeds/seedHelper');
+const { ensureAdminFromEnv } = require('./services/adminAccounts');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route imports
@@ -95,6 +98,7 @@ const PORT = process.env.PORT || 5001;
 const startServer = async () => {
   await connectDB();
   await seedInitialDataIfEmpty();
+  await ensureAdminFromEnv();
   startUniversitySync();
   server.listen(PORT, () => {
     console.log(`====================================================`);
@@ -108,6 +112,16 @@ const startServer = async () => {
 
 if (require.main === module) {
   startServer();
+
+  // Shut the database down cleanly so saved data is never corrupted
+  const shutdown = async (signal) => {
+    console.log(`\n${signal} received: closing SmartApply...`);
+    server.close();
+    try { await closeDB(); } catch (e) { /* already closed */ }
+    process.exit(0);
+  };
+  process.on('SIGINT', () => shutdown('SIGINT'));
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
 }
 
 module.exports = { app, server, startServer };

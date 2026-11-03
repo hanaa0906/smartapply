@@ -67,14 +67,6 @@ export const AuthProvider = ({ children }) => {
     setProfile(null);
   };
 
-  const loginAsDemo = async (role = 'student') => {
-    if (role === 'admin') {
-      return await login('admin@smartapply.edu', 'Admin@123');
-    } else {
-      return await login('student@smartapply.edu', 'Student@123');
-    }
-  };
-
   const refreshProfile = async () => {
     if (user && user.role === 'student') {
       try {
@@ -97,7 +89,6 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        loginAsDemo,
         refreshProfile
       }}
     >

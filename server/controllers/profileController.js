@@ -24,21 +24,14 @@ const calculateCompletion = (profile) => {
   if (profile.careerGoals?.length > 0) {
     score += 20;
   }
-  return Math.min(100, Math.max(20, score));
+  return Math.min(100, Math.max(0, score));
 };
 
 exports.getProfile = async (req, res, next) => {
   try {
     let profile = await StudentProfile.findOne({ userId: req.user.id }).populate('coursePreferences');
     if (!profile) {
-      profile = await StudentProfile.create({
-        userId: req.user.id,
-        academicInfo: {
-          tenth: { board: 'CBSE', passingYear: 2022, percentage: 85 },
-          twelfth: { board: 'CBSE', passingYear: 2024, percentage: 82, stream: 'Science (PCM)', subjects: [] }
-        },
-        completionPercentage: 35
-      });
+      profile = await StudentProfile.create({ userId: req.user.id });
     }
 
     res.status(200).json({

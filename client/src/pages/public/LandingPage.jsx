@@ -20,18 +20,10 @@ import {
 import StatusBadge from '../../components/StatusBadge';
 
 export default function LandingPage() {
-  const { user, loginAsDemo } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [demoStatus, setDemoStatus] = useState('DOCUMENT_VERIFICATION');
 
-  const handleQuickStart = async (role) => {
-    await loginAsDemo(role);
-    if (role === 'admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/student/dashboard');
-    }
-  };
 
   return (
     <div className="bg-slate-50 text-slate-900 overflow-hidden">
@@ -67,21 +59,15 @@ export default function LandingPage() {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
 
-                <button
-                  onClick={() => handleQuickStart('student')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-50 hover:border-slate-400 shadow-sm transition"
-                >
-                  <Zap className="w-4 h-4 text-amber-500" />
-                  Try Student Demo
-                </button>
-
-                <button
-                  onClick={() => handleQuickStart('admin')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 shadow-sm transition"
-                >
-                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                  Admin Console
-                </button>
+                {!user && (
+                  <Link
+                    to="/login"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-50 hover:border-slate-400 shadow-sm transition"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-indigo-500" />
+                    Sign In
+                  </Link>
+                )}
               </div>
 
               {/* Badges */}

@@ -17,6 +17,11 @@ const AuditLog = require('../models/AuditLog');
 const seedData = async () => {
   try {
     console.log('--- Starting SmartApply Database Seeder ---');
+    if (!process.argv.includes('--force')) {
+      console.log('⚠️  This DELETES every user, application and document, then loads demo data.');
+      console.log('   If you are sure, run: npm run seed -- --force');
+      process.exit(1);
+    }
     await connectDB();
 
     // Clear existing data

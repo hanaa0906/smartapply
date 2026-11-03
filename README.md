@@ -55,14 +55,18 @@ SmartApply is a production-grade, startup-ready web application built on the **M
 
 ---
 
-## 🔑 Demo Accounts & Quick Access
+## 🔑 Accounts
 
-You can log in directly using the pre-seeded accounts, or use the **1-Click Demo Buttons** located directly on the `/login` page:
+There are no built-in demo logins by default. Real accounts are created like this:
 
-| Role | Email | Password | Description |
-| :--- | :--- | :--- | :--- |
-| **Student** | `student@smartapply.edu` | `Student@123` | Candidate: **Aarav Patel** (Pre-populated profile, 12th PCM: 89.4%, JEE score, uploaded documents) |
-| **Admin** | `admin@smartapply.edu` | `Admin@123` | Officer: **Dean Dr. Rajesh Sharma** (Admissions Office, Apex Institute of Technology) |
+* **Students** sign up on the **Register** page (`/register`). Every new student starts with an empty profile.
+* **Admins (admissions officers)** cannot sign up publicly. Create the first one by filling in `ADMIN_NAME`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` (it is created when the server starts), or run:
+  ```bash
+  npm run create-admin -- --name "Dr. A. Kumar" --email officer@college.edu --password "YourPass123" --college AIT
+  ```
+  (Stop the server first when using the built-in database.)
+
+Data is saved in `server/data/db` (built-in database) or in the database at `MONGODB_URI`, so accounts survive restarts. To load the old sample accounts and applications instead, set `SEED_DEMO_DATA=true` on an empty database.
 
 ---
 
@@ -77,6 +81,12 @@ You can log in directly using the pre-seeded accounts, or use the **1-Click Demo
 
 ## 🚀 Quick Start Instructions
 
+### Deploy to Render
+
+The repository includes a Render Blueprint in `render.yaml`. Create a Blueprint from this GitHub repository and choose the `main` branch. During initial setup, enter a MongoDB Atlas connection string and the first admissions admin's name, email and password when Render prompts for the variables. Render generates `JWT_SECRET`; demo accounts stay disabled.
+
+The free Render service uses an ephemeral filesystem. MongoDB Atlas keeps application data persistent, but uploaded documents stored on the service may be lost on restart or redeploy. Use external file storage or a paid Render service with a persistent disk before relying on document retention.
+
 ### Prerequisites
 * Node.js v18+ (tested on Node v20/v26)
 * npm v9+
@@ -86,7 +96,7 @@ You can log in directly using the pre-seeded accounts, or use the **1-Click Demo
 # From the root directory:
 npm start
 ```
-The server will start on port `5001`, connect to MongoDB (or embedded MongoMemoryServer), auto-populate seed data, and serve both the React web application and the REST API simultaneously:
+The server will start on port `5001`, connect to MongoDB (or embedded MongoMemoryServer), seed the college/course/scholarship catalogue if needed, and serve both the React web application and the REST API simultaneously. It creates an admin account if `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set in `.env`. Demo users and applications are only added when `SEED_DEMO_DATA=true` on a new database:
 * **Web App URL**: `http://localhost:5001`
 * **API Base URL**: `http://localhost:5001/api`
 * **Socket.IO**: `ws://localhost:5001`
@@ -103,6 +113,7 @@ cd client && npm run dev
 * **Backend API Server**: `http://localhost:5001`
 
 ### 3. Run Automated Verification Tests
+The API and Socket.IO smoke tests use the demo accounts and sample applications. Start with `SEED_DEMO_DATA=true` on an empty database before running them.
 ```bash
 # Run API smoke test suite (11 test suites)
 node server/tests/smokeTest.js
@@ -115,18 +126,18 @@ node server/tests/socketTest.js
 
 ## 🧪 Interactive Two-Window Demo Script
 
-Follow this workflow to demonstrate real-time bi-directional synchronization:
+To use the demo workflow below, first start the app with `SEED_DEMO_DATA=true` on an empty database. The demo buttons are not shown on the login page; sign in with the seeded accounts:
 
 1. **Open Window 1 (Student View)**:
    - Navigate to `http://localhost:5001/login`.
-   - Click **"Student Demo"** (logs in as Aarav Patel).
+   - Sign in as `student@smartapply.edu` with password `Student@123` (Aarav Patel).
    - Inspect the **Student Dashboard**: profile completion gauge, active application card, and real-time status badge (`DOCUMENT_VERIFICATION`).
    - Click on the active application card to open the **Full Tracker** (`/student/application/:id`).
    - Notice the live status timeline and audit cards. Keep this tab visible on your screen.
 
 2. **Open Window 2 (Admin View - Incognito or Second Browser)**:
    - Navigate to `http://localhost:5001/login`.
-   - Click **"Admin Demo"** (logs in as Admissions Dean Dr. Sharma).
+   - Sign in as `admin@smartapply.edu` with password `Admin@123` (Admissions Dean Dr. Sharma).
    - Inspect the **Admin Dashboard**: Recharts donut chart for pipeline distribution and course demand bar chart.
    - Click **"Applications Queue"** (`/admin/applications`).
    - Click **"Evaluate"** on Aarav Patel's application (`SA-2026-88102`).

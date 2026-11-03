@@ -10,7 +10,8 @@
     "start": "node server/server.js",
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
-    "seed": "cd server && node seeds/seed.js"
+    "seed": "cd server && node seeds/seed.js",
+    "create-admin": "cd server && node scripts/createAdmin.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

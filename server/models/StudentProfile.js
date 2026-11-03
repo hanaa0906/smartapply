@@ -18,23 +18,23 @@ const studentProfileSchema = new mongoose.Schema({
     guardianName: { type: String, default: '' },
     guardianPhone: { type: String, default: '' },
     guardianOccupation: { type: String, default: '' },
-    annualFamilyIncome: { type: Number, default: 450000 },
+    annualFamilyIncome: { type: Number, default: 0 },
     category: { type: String, enum: ['General', 'OBC', 'SC', 'ST', 'EWS'], default: 'General' },
-    bloodGroup: { type: String, default: 'O+' }
+    bloodGroup: { type: String, default: '' }
   },
   academicInfo: {
     tenth: {
       board: { type: String, default: 'CBSE' },
       schoolName: { type: String, default: '' },
       passingYear: { type: Number, default: 2022 },
-      percentage: { type: Number, default: 88 },
+      percentage: { type: Number, default: 0 },
       rollNumber: { type: String, default: '' }
     },
     twelfth: {
       board: { type: String, default: 'CBSE' },
       schoolName: { type: String, default: '' },
       passingYear: { type: Number, default: 2024 },
-      percentage: { type: Number, default: 85 },
+      percentage: { type: Number, default: 0 },
       rollNumber: { type: String, default: '' },
       stream: { type: String, enum: ['Science (PCM)', 'Science (PCB)', 'Commerce', 'Arts', 'Vocational'], default: 'Science (PCM)' },
       subjects: [{
@@ -54,15 +54,15 @@ const studentProfileSchema = new mongoose.Schema({
   },
   skills: {
     type: [String],
-    default: ['Python', 'Problem Solving', 'Data Analysis']
+    default: []
   },
   interests: {
     type: [String],
-    default: ['Artificial Intelligence', 'Software Development', 'Robotics']
+    default: []
   },
   careerGoals: {
     type: [String],
-    default: ['AI Research Engineer', 'Full Stack Architect']
+    default: []
   },
   coursePreferences: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -74,7 +74,7 @@ const studentProfileSchema = new mongoose.Schema({
   },
   completionPercentage: {
     type: Number,
-    default: 30
+    default: 0
   }
 }, { timestamps: true });
 

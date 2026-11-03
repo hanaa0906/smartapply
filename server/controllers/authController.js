@@ -4,9 +4,22 @@ const { signToken } = require('../config/jwt');
 
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password, role, phone, collegeId } = req.body;
+    const name = String(req.body.name || '').trim();
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const password = String(req.body.password || '');
+    const phone = String(req.body.phone || '').trim();
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide your name, email and a password.' });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+    }
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters and include a letter and a number.' });
+    }
+
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -14,28 +27,18 @@ exports.register = async (req, res, next) => {
       });
     }
 
-    const assignedRole = role === 'admin' ? 'admin' : 'student';
-
+    // Public sign-up always creates a STUDENT. Admin accounts are created only by
+    // the server owner (ADMIN_EMAIL in .env, or `npm run create-admin`).
     const user = await User.create({
       name,
-      email: email.toLowerCase(),
+      email,
       password,
-      role: assignedRole,
-      phone,
-      collegeId: assignedRole === 'admin' ? collegeId : undefined
+      role: 'student',
+      phone
     });
 
-    // Automatically create initial StudentProfile if registering as student
-    if (assignedRole === 'student') {
-      await StudentProfile.create({
-        userId: user._id,
-        academicInfo: {
-          tenth: { board: 'CBSE', passingYear: 2022, percentage: 85 },
-          twelfth: { board: 'CBSE', passingYear: 2024, percentage: 82, stream: 'Science (PCM)', subjects: [] }
-        },
-        completionPercentage: 35
-      });
-    }
+    // Every new student starts with an empty profile that they fill in themselves.
+    await StudentProfile.create({ userId: user._id, completionPercentage: 0 });
 
     const token = signToken({ id: user._id, role: user.role });
 

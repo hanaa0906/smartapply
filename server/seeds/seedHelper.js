@@ -10,13 +10,15 @@ const Notification = require('../models/Notification');
 
 const seedInitialDataIfEmpty = async () => {
   try {
-    const userCount = await User.countDocuments();
-    if (userCount > 0) {
-      console.log(`Database already populated (${userCount} users found). Skipping auto-seed.`);
+    // Only the catalogue (colleges, courses, scholarships) is seeded by default.
+    // Demo users and sample applications are added only if SEED_DEMO_DATA=true.
+    const collegeCount = await College.countDocuments();
+    if (collegeCount > 0) {
+      console.log(`Catalogue already present (${collegeCount} colleges). Skipping auto-seed.`);
       return;
     }
 
-    console.log('Database empty: auto-populating SmartApply seed data...');
+    console.log('Database empty: adding colleges, courses and scholarships...');
 
     // 1. Create Colleges
     const colleges = await College.create([
@@ -308,7 +310,12 @@ const seedInitialDataIfEmpty = async () => {
       }
     ]);
 
-    // 4. Create Demo Admin and Student
+    if (process.env.SEED_DEMO_DATA !== 'true') {
+      console.log('✅ Catalogue seeded. No demo accounts created (set SEED_DEMO_DATA=true to add them).');
+      return;
+    }
+
+    // 4. Create Demo Admin and Student (only when SEED_DEMO_DATA=true)
     const adminUser = await User.create({
       name: 'Admissions Dean Dr. Rajesh Sharma',
       email: 'admin@smartapply.edu',

@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 
 export default function Navbar() {
-  const { user, logout, loginAsDemo } = useAuth();
+  const { user, logout } = useAuth();
   const { connected } = useSocket();
   const { unreadCount, notifications, markAsRead, markAllAsRead } = useNotifications();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,16 +35,6 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     navigate('/login');
-  };
-
-  const handleSwitchRole = async (targetRole) => {
-    await loginAsDemo(targetRole);
-    setProfileDropdownOpen(false);
-    if (targetRole === 'admin') {
-      navigate('/admin/dashboard');
-    } else {
-      navigate('/student/dashboard');
-    }
   };
 
   const isLinkActive = (path) => location.pathname === path;
@@ -150,26 +140,6 @@ export default function Navbar() {
           {/* Right Action Menu */}
           <div className="flex items-center gap-1.5 sm:gap-3">
             <LanguageSwitcher />
-
-            {/* Quick Demo Switcher Pill */}
-            <div className="hidden sm:flex items-center bg-indigo-50/80 border border-indigo-100 p-1 rounded-xl">
-              <button
-                onClick={() => handleSwitchRole('student')}
-                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition ${
-                  user?.role === 'student' ? 'bg-indigo-600 text-white shadow-sm' : 'text-indigo-700 hover:bg-indigo-100'
-                }`}
-              >
-                Student Demo
-              </button>
-              <button
-                onClick={() => handleSwitchRole('admin')}
-                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition ${
-                  user?.role === 'admin' ? 'bg-indigo-600 text-white shadow-sm' : 'text-indigo-700 hover:bg-indigo-100'
-                }`}
-              >
-                Admin Demo
-              </button>
-            </div>
 
             {/* Notification Bell (if logged in) */}
             {user && (
