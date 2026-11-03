@@ -1,31 +1,52 @@
 const { Server } = require('socket.io');
+const { verifyToken } = require('./jwt');
+const User = require('../models/User');
+const Application = require('../models/Application');
+const allowedOrigins = [
+  ...(process.env.CLIENT_URL || 'http://localhost:5173').split(','),
+  process.env.RENDER_EXTERNAL_URL || '',
+  'http://localhost:5001',
+  'http://127.0.0.1:5001'
+].map(value => value.trim()).filter(Boolean);
 
 let io = null;
 
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: '*',
+      origin: allowedOrigins,
+      credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
     }
   });
 
+  io.use(async (socket, next) => {
+    try {
+      const token = socket.handshake.auth?.token;
+      const decoded = token && verifyToken(token);
+      if (!decoded?.id) return next(new Error('Authentication required'));
+      const user = await User.findById(decoded.id);
+      if (!user || !user.isActive) return next(new Error('Authentication required'));
+      socket.data.user = user;
+      next();
+    } catch (error) {
+      next(new Error('Authentication required'));
+    }
+  });
+
   io.on('connection', (socket) => {
-    // console.log(`[Socket.IO] New client connected: ${socket.id}`);
+    const user = socket.data.user;
+    socket.join(`user_${user._id}`);
+    if (user.role === 'admin') socket.join('admins');
 
-    // Join personal user room for private notifications
-    socket.on('join_user', (userId) => {
-      if (userId) {
-        socket.join(`user_${userId}`);
-        // console.log(`[Socket.IO] Socket ${socket.id} joined user_${userId}`);
-      }
-    });
-
-    // Join specific application room for real-time tracking
-    socket.on('join_application', (applicationId) => {
-      if (applicationId) {
-        socket.join(`app_${applicationId}`);
-        // console.log(`[Socket.IO] Socket ${socket.id} joined app_${applicationId}`);
+    socket.on('join_application', async (applicationId) => {
+      try {
+        const query = { _id: applicationId };
+        if (user.role !== 'admin') query.studentId = user._id;
+        const application = await Application.findOne(query).select('_id');
+        if (application) socket.join(`app_${application._id}`);
+      } catch (error) {
+        // Invalid IDs and database errors do not grant room access.
       }
     });
 
@@ -56,10 +77,10 @@ const emitToApplication = (applicationId, event, data) => {
   }
 };
 
-const broadcast = (event, data) => {
+const broadcastToAdmins = (event, data) => {
   if (io) {
-    io.emit(event, data);
+    io.to('admins').emit(event, data);
   }
 };
 
-module.exports = { initSocket, getIO, emitToUser, emitToApplication, broadcast };
+module.exports = { initSocket, getIO, emitToUser, emitToApplication, broadcastToAdmins };

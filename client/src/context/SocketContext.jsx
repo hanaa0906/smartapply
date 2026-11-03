@@ -10,9 +10,16 @@ export const SocketProvider = ({ children }) => {
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
+    if (!user?.id) {
+      setSocket(null);
+      setConnected(false);
+      return undefined;
+    }
+
     // Connect to backend Socket.IO
     const newSocket = io(window.location.origin, {
       path: '/socket.io',
+      auth: { token: localStorage.getItem('smartapply_token') },
       transports: ['websocket', 'polling'],
       reconnectionAttempts: 10,
       reconnectionDelay: 1000
@@ -22,9 +29,6 @@ export const SocketProvider = ({ children }) => {
       // console.log('[Socket] Connected to server with ID:', newSocket.id);
       setConnected(true);
 
-      if (user?.id) {
-        newSocket.emit('join_user', user.id);
-      }
     });
 
     newSocket.on('disconnect', () => {
@@ -37,14 +41,7 @@ export const SocketProvider = ({ children }) => {
     return () => {
       newSocket.disconnect();
     };
-  }, []);
-
-  // Re-join user room if user logs in or changes
-  useEffect(() => {
-    if (socket && connected && user?.id) {
-      socket.emit('join_user', user.id);
-    }
-  }, [socket, connected, user?.id]);
+  }, [user?.id]);
 
   const joinApplication = (applicationId) => {
     if (socket && applicationId) {

@@ -8,7 +8,7 @@ const Document = require('../models/Document');
 const Notification = require('../models/Notification');
 const directory = require('../services/universityDirectory');
 const { analyzeApplicationData } = require('../services/assistantEngine');
-const { emitToUser, broadcast } = require('../config/socket');
+const { emitToUser, broadcastToAdmins } = require('../config/socket');
 
 const MAX_PER_BATCH = 10;
 const ALL_STREAMS = ['Science (PCM)', 'Science (PCB)', 'Commerce', 'Arts', 'Vocational'];
@@ -182,7 +182,7 @@ exports.applyToUniversities = async (req, res, next) => {
         status: application.status,
         applicationNumber: application.applicationNumber
       });
-      broadcast('NEW_APPLICATION_SUBMITTED', {
+      broadcastToAdmins('NEW_APPLICATION_SUBMITTED', {
         applicationId: application._id,
         courseName: `${programName} — ${uni.name}`,
         studentName: req.user.name

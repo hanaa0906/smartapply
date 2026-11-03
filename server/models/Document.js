@@ -45,7 +45,7 @@ const documentSchema = new mongoose.Schema({
     board: { type: String },
     year: { type: Number },
     dob: { type: String },
-    confidenceScore: { type: Number, default: 0.92 }
+    confidenceScore: { type: Number }
   },
   verificationIssues: [{
     issueType: { type: String },

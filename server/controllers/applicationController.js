@@ -5,7 +5,7 @@ const Course = require('../models/Course');
 const Document = require('../models/Document');
 const Notification = require('../models/Notification');
 const { analyzeApplicationData } = require('../services/assistantEngine');
-const { emitToUser, emitToApplication, broadcast } = require('../config/socket');
+const { emitToUser, emitToApplication, broadcastToAdmins } = require('../config/socket');
 
 const generateAppNumber = async () => {
   const year = new Date().getFullYear();
@@ -140,7 +140,7 @@ exports.createApplication = async (req, res, next) => {
       status: application.status,
       applicationNumber: application.applicationNumber
     });
-    broadcast('NEW_APPLICATION_SUBMITTED', {
+    broadcastToAdmins('NEW_APPLICATION_SUBMITTED', {
       applicationId: application._id,
       courseName: course.name,
       studentName: req.user.name

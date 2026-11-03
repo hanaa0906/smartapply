@@ -1,7 +1,7 @@
 const Document = require('../models/Document');
 const Application = require('../models/Application');
 const Notification = require('../models/Notification');
-const StudentProfile = require('../models/StudentProfile');
+const fs = require('fs');
 const { verifyDocumentFile } = require('../services/verificationEngine');
 const { emitToUser, emitToApplication } = require('../config/socket');
 
@@ -16,11 +16,16 @@ exports.uploadDocument = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Document type is required.' });
     }
 
-    const studentProfile = await StudentProfile.findOne({ userId: req.user.id });
-    const fileUrl = `/uploads/${req.file.filename}`;
+    if (applicationId) {
+      const application = await Application.findOne({ _id: applicationId, studentId: req.user.id });
+      if (!application) {
+        fs.unlink(req.file.path, () => {});
+        return res.status(404).json({ success: false, message: 'Application not found.' });
+      }
+    }
 
     // Run verification pipeline
-    const verification = verifyDocumentFile(req.file, documentType, studentProfile);
+    const verification = verifyDocumentFile(req.file, documentType);
 
     const doc = await Document.create({
       studentId: req.user.id,
@@ -29,13 +34,16 @@ exports.uploadDocument = async (req, res, next) => {
       originalName: req.file.originalname,
       fileName: req.file.filename,
       filePath: req.file.path,
-      fileUrl,
+      fileUrl: '',
       mimeType: req.file.mimetype,
       fileSize: req.file.size,
       status: verification.status,
       extractedData: verification.extractedData,
       verificationIssues: verification.verificationIssues
     });
+
+    doc.fileUrl = `/api/documents/${doc._id}/file`;
+    await doc.save();
 
     // If attached to application, update application documents
     if (applicationId) {
@@ -53,8 +61,48 @@ exports.uploadDocument = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: 'Document uploaded and analyzed successfully.',
+      message: 'Document uploaded. Basic file checks passed; staff verification is still required.',
       document: doc
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadDocument = async (req, res, next) => {
+  try {
+    const document = await Document.findById(req.params.id);
+    if (!document) {
+      return res.status(404).json({ success: false, message: 'Document not found.' });
+    }
+    if (req.user.role !== 'admin' && document.studentId.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Access denied to this document.' });
+    }
+    if (!fs.existsSync(document.filePath)) {
+      return res.status(404).json({ success: false, message: 'Document file is unavailable.' });
+    }
+    res.download(document.filePath, document.originalName, (error) => {
+      if (error && !res.headersSent) next(error);
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.downloadLegacyDocument = async (req, res, next) => {
+  try {
+    const document = await Document.findOne({ fileName: req.params.filename });
+    if (!document) {
+      return res.status(404).json({ success: false, message: 'Document not found.' });
+    }
+    if (req.user.role !== 'admin' && document.studentId.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: 'Access denied to this document.' });
+    }
+    if (!fs.existsSync(document.filePath)) {
+      return res.status(404).json({ success: false, message: 'Document file is unavailable.' });
+    }
+    res.download(document.filePath, document.originalName, (error) => {
+      if (error && !res.headersSent) next(error);
     });
   } catch (error) {
     next(error);

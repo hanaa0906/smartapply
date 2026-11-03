@@ -25,24 +25,31 @@ const adminRoutes = require('./routes/adminRoutes');
 const universityRoutes = require('./routes/universityRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const { startAutoRefresh: startUniversitySync } = require('./services/universityDirectory');
+const { protect } = require('./middleware/auth');
+const { downloadLegacyDocument } = require('./controllers/documentController');
 
 const app = express();
 const server = http.createServer(app);
+const configuredOrigins = new Set([
+  ...(process.env.CLIENT_URL || 'http://localhost:5173').split(','),
+  process.env.RENDER_EXTERNAL_URL || '',
+  'http://localhost:5001',
+  'http://127.0.0.1:5001'
+].map(value => value.trim()).filter(Boolean));
 
 // Initialize Socket.IO
 initSocket(server);
 
 // Middleware
 app.use(cors({
-  origin: '*',
+  origin: (origin, callback) => {
+    callback(null, !origin || configuredOrigins.has(origin));
+  },
   credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-
-// Static uploads folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -66,6 +73,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/universities', universityRoutes);
 app.use('/api/chat', chatRoutes);
+app.get('/uploads/:filename', protect, downloadLegacyDocument);
 
 // Static frontend serving if built
 const clientDist = path.join(__dirname, '../client/dist');
