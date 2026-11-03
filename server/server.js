@@ -142,4 +142,8 @@ if (require.main === module) {
   process.on('SIGTERM', () => shutdown('SIGTERM'));
 }
 
-module.exports = { app, server, startServer };
+// Export the HTTP server for Vercel's Express/WebSocket runtime while retaining
+// named references for local tooling that imports this module.
+server.app = app;
+server.startServer = startServer;
+module.exports = server;
