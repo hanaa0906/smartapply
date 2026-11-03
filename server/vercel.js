@@ -1,5 +1,10 @@
-// Vercel's Express service entrypoint exports the HTTP server so Socket.IO can
-// attach to the same server for WebSocket requests.
+// Vercel's Express adapter expects a function export. Delegate requests to the
+// same HTTP server that owns Express and Socket.IO.
 const { server } = require('./server');
 
-module.exports = server;
+const handler = (req, res) => {
+  server.emit('request', req, res);
+};
+handler.server = server;
+
+module.exports = handler;
