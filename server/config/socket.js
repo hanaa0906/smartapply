@@ -2,9 +2,20 @@ const { Server } = require('socket.io');
 const { verifyToken } = require('./jwt');
 const User = require('../models/User');
 const Application = require('../models/Application');
+const { initializeApplication } = require('./initialize');
+const toOrigin = (value) => {
+  if (!value) return '';
+  try {
+    return new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`).origin;
+  } catch {
+    return '';
+  }
+};
 const allowedOrigins = [
   ...(process.env.CLIENT_URL || 'http://localhost:5173').split(','),
   process.env.RENDER_EXTERNAL_URL || '',
+  toOrigin(process.env.VERCEL_URL),
+  toOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL),
   'http://localhost:5001',
   'http://127.0.0.1:5001'
 ].map(value => value.trim()).filter(Boolean);
@@ -22,6 +33,7 @@ const initSocket = (httpServer) => {
 
   io.use(async (socket, next) => {
     try {
+      if (process.env.VERCEL) await initializeApplication();
       const token = socket.handshake.auth?.token;
       const decoded = token && verifyToken(token);
       if (!decoded?.id) return next(new Error('Authentication required'));

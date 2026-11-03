@@ -12,6 +12,7 @@ const { connectDB, closeDB } = require('./config/db');
 const { initSocket } = require('./config/socket');
 const { seedInitialDataIfEmpty } = require('./seeds/seedHelper');
 const { ensureAdminFromEnv } = require('./services/adminAccounts');
+const { initializeApplication } = require('./config/initialize');
 const errorHandler = require('./middleware/errorHandler');
 
 // Route imports
@@ -33,9 +34,19 @@ const { downloadLegacyDocument } = require('./controllers/documentController');
 
 const app = express();
 const server = http.createServer(app);
+const toOrigin = (value) => {
+  if (!value) return '';
+  try {
+    return new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`).origin;
+  } catch {
+    return '';
+  }
+};
 const configuredOrigins = new Set([
   ...(process.env.CLIENT_URL || 'http://localhost:5173').split(','),
   process.env.RENDER_EXTERNAL_URL || '',
+  toOrigin(process.env.VERCEL_URL),
+  toOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL),
   'http://localhost:5001',
   'http://127.0.0.1:5001'
 ].map(value => value.trim()).filter(Boolean));
@@ -53,6 +64,13 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+
+// Vercel runs this app as a function, so initialize persistent services lazily
+// on the first request instead of relying on a long-lived process startup hook.
+app.use((req, res, next) => {
+  if (!process.env.VERCEL) return next();
+  initializeApplication().then(() => next(), next);
+});
 
 // Health check route
 app.get('/api/health', (req, res) => {
